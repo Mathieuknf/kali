@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CyberAtlas, plateforme pédagogique pour apprendre la cybersécurité et Kali Linux.">
+    <title>CyberAtlas | Learn the signal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        :root {
+            --ink: #101820;
+            --muted: #68747b;
+            --paper: #f4f1e9;
+            --panel: #fbfaf5;
+            --line: #d9d7cf;
+            --lime: #c8f052;
+            --blue: #6ca7ff;
+            --coral: #ff826d;
+            --shadow: 0 18px 50px rgba(16, 24, 32, .08);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; color: var(--ink); background: var(--paper); font-family: 'Space Grotesk', sans-serif; }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; cursor: pointer; }
+
+        .shell { max-width: 1320px; margin: auto; padding: 0 34px 70px; }
+        .topbar { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; padding: 24px 0; }
+        .brand { align-items: center; display: flex; gap: 10px; font-weight: 700; letter-spacing: -.04em; }
+        .brand-mark { align-items: center; background: var(--ink); color: var(--lime); display: flex; font-family: 'DM Mono', monospace; font-size: 12px; height: 30px; justify-content: center; width: 30px; }
+        nav { display: flex; gap: 30px; font-size: 13px; font-weight: 600; }
+        nav a { color: var(--muted); transition: color .2s; }
+        nav a:hover { color: var(--ink); }
+        .status { align-items: center; display: flex; font-family: 'DM Mono', monospace; font-size: 11px; gap: 8px; }
+        .status i { background: #75bb58; border-radius: 50%; height: 7px; width: 7px; }
+
+        .hero { display: grid; gap: 40px; grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr); min-height: 540px; padding: 86px 0 72px; }
+        .eyebrow { color: #657076; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+        h1 { font-size: clamp(52px, 8vw, 104px); letter-spacing: -.085em; line-height: .88; margin: 24px 0; max-width: 720px; }
+        h1 span { color: #769d17; }
+        .hero-copy { color: var(--muted); font-size: 18px; line-height: 1.55; max-width: 540px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+        .button { border: 1px solid var(--ink); display: inline-flex; font-size: 13px; font-weight: 700; gap: 10px; padding: 14px 17px; transition: transform .2s, box-shadow .2s; }
+        .button:hover { box-shadow: 5px 5px 0 var(--ink); transform: translate(-2px, -2px); }
+        .button-primary { background: var(--ink); color: var(--lime); }
+        .button-light { background: transparent; }
+        .terminal { align-self: center; background: var(--ink); box-shadow: var(--shadow); color: #c6d2c2; font-family: 'DM Mono', monospace; font-size: 12px; min-height: 330px; padding: 18px; position: relative; transform: rotate(2deg); }
+        .terminal::before { color: #6a7770; content: 'CYBERATLAS / LAB 01'; display: block; font-size: 10px; margin-bottom: 34px; }
+        .terminal-line { margin: 14px 0; }
+        .terminal-line span { color: var(--lime); }
+        .terminal-output { color: #839087; line-height: 1.65; margin: 24px 0; max-width: 330px; }
+        .cursor { animation: blink 1s steps(2, end) infinite; color: var(--lime); }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .section { border-top: 1px solid var(--line); padding: 72px 0; }
+        .section-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: 30px; }
+        h2 { font-size: clamp(30px, 4vw, 52px); letter-spacing: -.07em; line-height: .95; margin: 10px 0 0; }
+        .section-heading p { color: var(--muted); font-size: 14px; line-height: 1.5; max-width: 300px; }
+        .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+        .filter { background: transparent; border: 1px solid var(--line); color: var(--muted); font-size: 12px; padding: 9px 13px; }
+        .filter.active, .filter:hover { background: var(--ink); border-color: var(--ink); color: var(--lime); }
+        .video-grid { display: grid; gap: 18px; grid-template-columns: repeat(3, 1fr); }
+        .video-card { background: var(--panel); border: 1px solid var(--line); transition: transform .2s, box-shadow .2s; }
+        .video-card:hover { box-shadow: 8px 8px 0 #d6d4ca; transform: translateY(-4px); }
+        .video-card[hidden] { display: none; }
+        .thumb { align-items: center; aspect-ratio: 16 / 9; background: #202d39; color: var(--lime); display: flex; justify-content: center; overflow: hidden; position: relative; }
+        .thumb::after { color: rgba(255,255,255,.15); content: 'SIGNAL / 0' attr(data-index); font-family: 'DM Mono', monospace; font-size: 11px; position: absolute; right: 14px; top: 13px; }
+        .thumb.blue { background: #273b55; color: var(--blue); }
+        .thumb.coral { background: #4b3132; color: var(--coral); }
+        .play { align-items: center; border: 1px solid currentColor; border-radius: 50%; display: flex; font-size: 18px; height: 48px; justify-content: center; padding-left: 4px; width: 48px; }
+        .video-info { padding: 18px; }
+        .video-info h3 { font-size: 17px; letter-spacing: -.03em; margin: 0 0 12px; }
+        .meta { color: var(--muted); display: flex; font-family: 'DM Mono', monospace; font-size: 10px; justify-content: space-between; text-transform: uppercase; }
+
+        .tools-layout { display: grid; gap: 36px; grid-template-columns: .8fr 1.2fr; }
+        .tools-intro { color: var(--muted); line-height: 1.6; max-width: 380px; }
+        .notice { border-left: 3px solid var(--coral); font-family: 'DM Mono', monospace; font-size: 11px; line-height: 1.6; margin-top: 30px; padding: 5px 0 5px 15px; }
+        .tool-list { display: grid; gap: 10px; grid-template-columns: repeat(2, 1fr); }
+        .tool-card { background: var(--panel); border: 1px solid var(--line); padding: 22px; }
+        .tool-num { color: #9ea39b; font-family: 'DM Mono', monospace; font-size: 11px; }
+        .tool-card h3 { font-size: 20px; margin: 20px 0 8px; }
+        .tool-card p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0 0 22px; }
+        .tool-code { background: var(--ink); color: var(--lime); display: block; font-family: 'DM Mono', monospace; font-size: 11px; overflow: auto; padding: 11px; white-space: nowrap; }
+        .roadmap { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); }
+        .roadmap-step { border-top: 2px solid var(--ink); padding-top: 18px; }
+        .roadmap-step strong { display: block; font-size: 22px; letter-spacing: -.04em; margin: 14px 0 8px; }
+        .roadmap-step p { color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; max-width: 250px; }
+        .roadmap-step span { color: #789d1b; font-family: 'DM Mono', monospace; font-size: 11px; }
+        .lab-checklist { background: var(--ink); color: #d3ddd1; display: grid; gap: 18px; grid-template-columns: 1fr 1fr; margin-top: 42px; padding: 26px; }
+        .lab-checklist h3 { color: var(--lime); font-size: 18px; grid-column: 1 / -1; margin: 0; }
+        .lab-checklist p { font-family: 'DM Mono', monospace; font-size: 11px; line-height: 1.6; margin: 0; }
+        .video-modal { align-items: center; background: rgba(16, 24, 32, .82); display: flex; inset: 0; justify-content: center; opacity: 0; padding: 20px; pointer-events: none; position: fixed; transition: opacity .2s; z-index: 5; }
+        .video-modal.open { opacity: 1; pointer-events: auto; }
+        .video-modal-inner { background: var(--panel); max-width: 820px; padding: 18px; position: relative; width: 100%; }
+        .video-frame { aspect-ratio: 16 / 9; background: var(--ink); display: block; width: 100%; }
+        .video-frame iframe { border: 0; height: 100%; width: 100%; }
+        .video-modal-title { font-size: 18px; margin: 16px 42px 2px 0; }
+        .video-modal-note { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; margin: 0; }
+        .modal-close { background: transparent; border: 1px solid var(--line); color: var(--ink); font-size: 18px; height: 34px; position: absolute; right: 18px; top: 18px; width: 34px; }
+
+        .footer { align-items: center; border-top: 1px solid var(--line); display: flex; justify-content: space-between; padding-top: 24px; }
+        .footer small { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; }
+        .toast { background: var(--ink); bottom: 24px; color: var(--lime); font-family: 'DM Mono', monospace; font-size: 12px; left: 50%; opacity: 0; padding: 14px 18px; pointer-events: none; position: fixed; transform: translate(-50%, 20px); transition: opacity .2s, transform .2s; z-index: 4; }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+        @media (max-width: 800px) { .shell { padding-inline: 20px; } nav { display: none; } .hero, .tools-layout { grid-template-columns: 1fr; } .hero { padding-top: 60px; } .terminal { margin: 10px 10px 0 0; } .video-grid { grid-template-columns: 1fr; } .section-heading { align-items: start; flex-direction: column; } }
+        @media (max-width: 480px) { h1 { font-size: 58px; } .tool-list { grid-template-columns: 1fr; } .status { display: none; } }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <header class="topbar">
+            <a class="brand" href="#top"><span class="brand-mark">//</span> CYBERATLAS</a>
+            <nav aria-label="Navigation principale"><a href="#watch">Watch</a><a href="#tools">Kali lab</a><a href="#ethics">Ethics</a></nav>
+            <div class="status"><i></i> SYSTEM ONLINE</div>
+        </header>
+
+        <section class="hero" id="top">
+            <div>
+                <div class="eyebrow">FIELD NOTES / 2026 EDITION</div>
+                <h1>Learn the<br><span>signal.</span></h1>
+                <p class="hero-copy">Un espace clair pour comprendre la cybersécurité, regarder les bons formats et pratiquer avec Kali Linux dans un environnement autorisé.</p>
+                <div class="hero-actions"><a class="button button-primary" href="#watch">Explorer les vidéos <span>↘</span></a><a class="button button-light" href="#tools">Ouvrir le lab</a></div>
+            </div>
+            <div class="terminal" aria-label="Aperçu du terminal Kali Linux">
+                <div class="terminal-line"><span>┌─[user@cyberatlas]</span></div>
+                <div class="terminal-line">└──╼ <span>~$</span> cat mission.txt</div>
+                <div class="terminal-output">Observer. Comprendre.<br>Tester dans un lab isolé.<br>Documenter chaque signal.</div>
+                <div class="terminal-line">└──╼ <span>~$</span> ./start-learning <b class="cursor">_</b></div>
+            </div>
+        </section>
+
+        <section class="section" id="watch">
+            <div class="section-heading"><div><div class="eyebrow">01 / WATCH LIBRARY</div><h2>Voir. Puis<br>comprendre.</h2></div><p>Des formats courts pour poser les bases avant de passer au terminal.</p></div>
+            <div class="filters" role="group" aria-label="Filtrer les vidéos"><button class="filter active" data-filter="all">Tout</button><button class="filter" data-filter="fundamentals">Fondamentaux</button><button class="filter" data-filter="kali">Kali Linux</button></div>
+            <div class="video-grid">
+                <article class="video-card" data-category="fundamentals" data-video="inWWhr5tnEA"><div class="thumb" data-index="01"><button class="play" aria-label="Lire la vidéo Comprendre la cybersécurité en 7 minutes">▶</button></div><div class="video-info"><h3>Comprendre la cybersécurité en 7 minutes</h3><div class="meta"><span>Fondamentaux</span><span>07:00</span></div></div></article>
+                <article class="video-card" data-category="kali" data-video="4t4kBkMsDbQ"><div class="thumb blue" data-index="02"><button class="play" aria-label="Lire la vidéo Les premiers pas dans Kali Linux">▶</button></div><div class="video-info"><h3>Les premiers pas dans Kali Linux</h3><div class="meta"><span>Kali Linux</span><span>12:10</span></div></div></article>
+                <article class="video-card" data-category="fundamentals" data-video="3Kq1MIfTWCE"><div class="thumb coral" data-index="03"><button class="play" aria-label="Lire la vidéo Cours d'ethical hacking pour débutants">▶</button></div><div class="video-info"><h3>Cours d'ethical hacking pour débutants</h3><div class="meta"><span>Fondamentaux</span><span>2019</span></div></div></article>
+            </div>
+        </section>
+
+        <section class="section" id="tools">
+            <div class="tools-layout"><div><div class="eyebrow">02 / KALI LINUX LAB</div><h2>Les outils,<br>avec méthode.</h2><p class="tools-intro">Kali est une boîte à outils. Le réflexe professionnel : définir le périmètre, obtenir l'autorisation et garder une trace de ses tests.</p><div class="notice" id="ethics">LAB RULE // utilisez ces commandes uniquement sur vos machines ou une plateforme de formation.</div></div>
+                <div class="tool-list">
+                    <article class="tool-card"><div class="tool-num">A / 01</div><h3>Nmap</h3><p>Cartographier les services exposés de votre propre lab et lire les résultats avec recul.</p><code class="tool-code">nmap -sV 192.168.56.101</code></article>
+                    <article class="tool-card"><div class="tool-num">B / 02</div><h3>Wireshark</h3><p>Observer le trafic d'un réseau de test pour repérer les protocoles et anomalies.</p><code class="tool-code">wireshark --help</code></article>
+                    <article class="tool-card"><div class="tool-num">C / 03</div><h3>Burp Suite</h3><p>Comprendre les requêtes HTTP sur une application volontairement vulnérable.</p><code class="tool-code">burpsuite</code></article>
+                    <article class="tool-card"><div class="tool-num">D / 04</div><h3>John</h3><p>Évaluer la robustesse de mots de passe de test générés pour votre lab.</p><code class="tool-code">john --test</code></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="roadmap">
+            <div class="section-heading"><div><div class="eyebrow">03 / YOUR ROUTE</div><h2>Un chemin<br>praticable.</h2></div><p>Avancez par petites boucles : théorie, observation, compte rendu.</p></div>
+            <div class="roadmap">
+                <div class="roadmap-step"><span>01 / OBSERVER</span><strong>Comprendre le signal</strong><p>Réseaux, actifs, journaux et vocabulaire essentiel avant toute commande.</p></div>
+                <div class="roadmap-step"><span>02 / TESTER</span><strong>Construire un lab</strong><p>Deux machines virtuelles, un réseau isolé et un périmètre écrit avant le test.</p></div>
+                <div class="roadmap-step"><span>03 / RESTITUER</span><strong>Raconter le risque</strong><p>Résultat, impact, preuve et recommandation : un bon rapport vaut mieux qu'un scan.</p></div>
+            </div>
+            <div class="lab-checklist"><h3>Checklist avant le premier terminal</h3><p>[ ] Machine virtuelle ou plateforme de formation</p><p>[ ] Réseau de test isolé du réseau personnel</p><p>[ ] Autorisation et périmètre documentés</p><p>[ ] Snapshot réalisé avant les manipulations</p></div>
+        </section>
+
+        <footer class="footer"><a class="brand" href="#top"><span class="brand-mark">//</span> CYBERATLAS</a><small>LEARN ETHICALLY · BUILD DEFENSIVELY</small></footer>
+    </main>
+    <div class="video-modal" role="dialog" aria-modal="true" aria-labelledby="video-modal-title">
+        <div class="video-modal-inner">
+            <button class="modal-close" aria-label="Fermer le lecteur">×</button>
+            <div class="video-frame"><iframe title="Lecteur vidéo cybersécurité" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+            <h3 class="video-modal-title" id="video-modal-title"></h3>
+            <p class="video-modal-note">Lecture intégrée · source YouTube</p>
+        </div>
+    </div>
+    <div class="toast" role="status" aria-live="polite"></div>
+   <script>
+    const toast = document.querySelector('.toast');
+    let toastTimer;
+    function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    // Gestion des filtres
+    document.querySelectorAll('.filter').forEach((filterButton) => {
+        filterButton.addEventListener('click', () => {
+            document.querySelectorAll('.filter').forEach((button) => button.classList.remove('active'));
+            filterButton.classList.add('active');
+            const selected = filterButton.dataset.filter;
+            document.querySelectorAll('.video-card').forEach((card) => {
+                card.hidden = selected !== 'all' && card.dataset.category !== selected;
+            });
+        });
+    });
+
+    const videoModal = document.querySelector('.video-modal');
+    const videoFrame = document.querySelector('.video-frame iframe');
+    const videoModalTitle = document.querySelector('.video-modal-title');
+
+    function closeVideo() {
+        videoModal.classList.remove('open');
+        videoFrame.src = ''; // Arrête la vidéo à la fermeture
+    }
+
+    // NOUVEAU : On rend toute la miniature de la vidéo cliquable
+    document.querySelectorAll('.thumb').forEach((thumb) => {
+        thumb.style.cursor = 'pointer'; // Indique que c'est cliquable
+        thumb.addEventListener('click', () => {
+            const card = thumb.closest('.video-card');
+            videoModalTitle.textContent = card.querySelector('h3').textContent;
+            
+            // CORRECTION : Utilisation du youtube.com standard et retrait du mute=1 (pour avoir le son)
+            const videoId = card.dataset.video;
+            videoFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0`;
+            
+            videoModal.classList.add('open');
+        });
+    });
+
+    document.querySelector('.modal-close').addEventListener('click', closeVideo);
+    videoModal.addEventListener('click', (event) => { if (event.target === videoModal) closeVideo(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeVideo(); });
+</script>
+</body>
+</html>
